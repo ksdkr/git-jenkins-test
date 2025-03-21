@@ -1,0 +1,26 @@
+
+---
+- name: Deploy Apache in Docker
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Pull the latest Ubuntu image
+      docker_image:
+        name: ubuntu
+        source: pull
+
+    - name: Run Apache container
+      docker_container:
+        name: apache_server
+        image: ubuntu
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:80"
+        command: "/bin/bash -c 'apt update && apt install -y apache2 && service apache2 start && tail -F /dev/null'"
+
+    - name: Copy index.html file into the container
+      copy:
+        content: "<h1>Welcome to Ansible Automated Apache Server</h1>"
+        dest: /var/www/html/index.html"
+
